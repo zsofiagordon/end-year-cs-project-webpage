@@ -33,16 +33,16 @@ app.get("/",function (request,response){
 
 app.post("/stegEnc",function(request,response){
     var form = new formidable.IncomingForm();
-    form.parse(request, function (err, fields, files) {
+    form.parse(request, async function (err, fields, files) {
         try {
             var nameTokens = files.image.path.split(path.sep);
             var newName = nameTokens[nameTokens.length - 1];
             var newPath = `public/encImg/${newName}.png`;
             var stegPath = `public/encImg/z${newName}.png`;
             console.log(`Created file: ${newPath}`);
-            fs.renameSync(files.image.path, newPath);
+            await fs.rename(files.image.path, newPath);
     
-            var stegOutput = child.spawnSync('java', ['-cp', javaClassPath, 'AddMsg', newPath, "LSBPerChannel", fields.message]);
+            var stegOutput = await child.spawn('java', ['-cp', javaClassPath, 'AddMsg', newPath, "LSBPerChannel", fields.message]);
             console.log(stegOutput.stdout.toString());
             console.log(stegOutput.stderr.toString());
     
