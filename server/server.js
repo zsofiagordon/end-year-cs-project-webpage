@@ -65,10 +65,9 @@ app.post("/stegEnc",function(request,response){
                         console.log(err);
                         throw err;
                     }
-                    console.log(`Deleted file: ${stegPath}`);
+                    console.log(`Deleted file: ${newPath}`);
                 }
             );
-            console.log(`Deleted file: ${newPath}`);
     
             setTimeout(() => fs.unlink(
                 stegPath,
