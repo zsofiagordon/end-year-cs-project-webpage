@@ -1,48 +1,76 @@
 const express = require("express");
 const path = require("path");
 const app = express();
+const child = require('child_process')
+
+const javaClassPath = process.argv[2];
+
+var xssEscape = require('xss-escape');
 var http = require("http");
 var formidable = require("formidable");
 var fs = require("fs");
+
+if (!fs.existsSync("public/encImg")){
+    fs.mkdirSync("public/encImg");
+}
 
 app.get("/",function (request,response){
     response.send(`
         <DOCTYPE!>
         <html>
-        <body>
-        <form action="/steg" method="post" enctype="multipart/form-data">
-            <label for="image">Select an image file:</label>
-            <input type="file" name="image" id="image">
-            <label for="message">Enter your message</label>
-            <input type="text" name="message" id="message">
-            <input type="submit">
-        </form>
-        </body>
+            <body>
+                <form action="/stegEnc" method="post" enctype="multipart/form-data">
+                    <label for="image">Select an image file:</label>
+                    <input type="file" name="image" id="image" accept=".png">
+                    <label for="message">Enter your message</label>
+                    <input type="text" name="message" id="message">
+                    <input type="submit">
+                </form>
+            </body>
         </html>
     `);
 });
 
-app.post("/steg",function(request,response){
+app.post("/stegEnc",function(request,response){
     var form = new formidable.IncomingForm();
     form.parse(request, function (err, fields, files) {
-      var tmpLocation = files.image.path;
-      var newpath = 'public/img/src.png';
-      fs.rename(tmpLocation, newpath, function (err) {
-        if (err) throw err;
-        response.write('File uploaded and moved!');
-        response.end();
-      });
-      var message = fields.message;
+
+        var nameTokens = files.image.path.split(path.sep);
+        var newName = nameTokens[nameTokens.length - 1];
+        var newPath = `public/encImg/${newName}.png`;
+        var stegPath = `public/encImg/z${newName}.png`;
+        console.log(`Created file: ${newPath}`);
+        fs.renameSync(files.image.path, newPath);
+
+        var stegOutput = child.spawnSync('java', ['-cp', javaClassPath, 'AddMsg', newPath, "LSBPerChannel", fields.message]);
+        console.log(stegOutput.stdout.toString());
+        console.log(stegOutput.stderr.toString());
+
+        var message = xssEscape(fields.message);
         var page = `
             <html>
-            <body>
-            <p>Image uploaded!<p>
-            <p>message is ${message}</p>
-            <img src="img/src.png" style="width: 50%; margin: 10px;"/>
-            </body>
+                <body>
+                    <p>Image uploaded!<p>
+                    <p>message is: <b>${message}</b></p>
+                    <img src="encImg/z${newName}.png" style="width: 50%; margin: 10px;"/>
+                </body>
             </html>
         `;
         response.send(page);
+        
+        fs.unlinkSync(newPath);
+        console.log(`Deleted file: ${newPath}`);
+
+        setTimeout(() => fs.unlink(
+            stegPath,
+            (err) => {
+                if (err) {
+                    console.log(err);
+                    throw err;
+                }
+                console.log(`Deleted file: ${stegPath}`);
+            }
+        ), 600000);
     });
 });
 
