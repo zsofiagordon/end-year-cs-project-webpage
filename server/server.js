@@ -34,43 +34,53 @@ app.get("/",function (request,response){
 app.post("/stegEnc",function(request,response){
     var form = new formidable.IncomingForm();
     form.parse(request, function (err, fields, files) {
-
-        var nameTokens = files.image.path.split(path.sep);
-        var newName = nameTokens[nameTokens.length - 1];
-        var newPath = `public/encImg/${newName}.png`;
-        var stegPath = `public/encImg/z${newName}.png`;
-        console.log(`Created file: ${newPath}`);
-        fs.renameSync(files.image.path, newPath);
-
-        var stegOutput = child.spawnSync('java', ['-cp', javaClassPath, 'AddMsg', newPath, "LSBPerChannel", fields.message]);
-        console.log(stegOutput.stdout.toString());
-        console.log(stegOutput.stderr.toString());
-
-        var message = xssEscape(fields.message);
-        var page = `
-            <html>
-                <body>
-                    <p>Image uploaded!<p>
-                    <p>message is: <b>${message}</b></p>
-                    <img src="encImg/z${newName}.png" style="width: 50%; margin: 10px;"/>
-                </body>
-            </html>
-        `;
-        response.send(page);
-        
-        fs.unlinkSync(newPath);
-        console.log(`Deleted file: ${newPath}`);
-
-        setTimeout(() => fs.unlink(
-            stegPath,
-            (err) => {
-                if (err) {
-                    console.log(err);
-                    throw err;
+        try {
+            var nameTokens = files.image.path.split(path.sep);
+            var newName = nameTokens[nameTokens.length - 1];
+            var newPath = `public/encImg/${newName}.png`;
+            var stegPath = `public/encImg/z${newName}.png`;
+            console.log(`Created file: ${newPath}`);
+            fs.renameSync(files.image.path, newPath);
+    
+            var stegOutput = child.spawnSync('java', ['-cp', javaClassPath, 'AddMsg', newPath, "LSBPerChannel", fields.message]);
+            console.log(stegOutput.stdout.toString());
+            console.log(stegOutput.stderr.toString());
+    
+            var message = xssEscape(fields.message);
+            var page = `
+                <html>
+                    <body>
+                        <p>Image uploaded!<p>
+                        <p>message is: <b>${message}</b></p>
+                        <img src="encImg/z${newName}.png" style="width: 50%; margin: 10px;"/>
+                    </body>
+                </html>
+            `;
+            response.send(page);
+            
+            fs.unlink(
+                newPath,
+                (err) => {
+                    if (err) {
+                        console.log(err);
+                        throw err;
+                    }
+                    console.log(`Deleted file: ${stegPath}`);
                 }
-                console.log(`Deleted file: ${stegPath}`);
-            }
-        ), 600000);
+            );
+            console.log(`Deleted file: ${newPath}`);
+    
+            setTimeout(() => fs.unlink(
+                stegPath,
+                (err) => {
+                    if (err) {
+                        console.log(err);
+                        throw err;
+                    }
+                    console.log(`Deleted file: ${stegPath}`);
+                }
+            ), 600000);
+        } catch (e) {};
     });
 });
 
