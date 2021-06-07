@@ -1,0 +1,23 @@
+{
+  "name": "end-year-cs-project-webpage",
+  "version": "1.0.0",
+  "description": "end year cs project webpage",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zsofiagordon/end-year-cs-project-webpage.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zsofiagordon/end-year-cs-project-webpage/issues"
+  },
+  "homepage": "https://github.com/zsofiagordon/end-year-cs-project-webpage#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "formidable": "^1.2.2"
+  }
+}
