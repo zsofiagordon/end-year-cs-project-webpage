@@ -18,14 +18,22 @@ app.get("/",function (request,response){
     response.send(`
         <DOCTYPE!>
         <html>
-            <body>
+            <head>
+                <link rel="stylesheet" href="/index.css">
+                <script src="index.js"></script>
+            </head>
+            <body onload="doOnLoad()">
                 <form action="/stegEnc" method="post" enctype="multipart/form-data">
                     <label for="image">Select an image file:</label>
-                    <input type="file" name="image" id="image" accept=".png">
+                    <div id="drop-area">
+                        <input type="file" id="image" name="image" accept=".png">
+                        <label class="button" for="image">Select some files</label>
+                    </div>
                     <label for="message">Enter your message</label>
                     <input type="text" name="message" id="message">
                     <input type="submit">
                 </form>
+                <script src="index.js"></script>
             </body>
         </html>
     `);
@@ -35,6 +43,7 @@ app.post("/stegEnc",function(request,response){
     var form = new formidable.IncomingForm();
     form.parse(request, async function (err, fields, files) {
         try {
+            console.log("Request recieved!");
             var nameTokens = files.image.path.split(path.sep);
             var newName = nameTokens[nameTokens.length - 1];
             var newPath = `public/encImg/${newName}.png`;
@@ -43,8 +52,7 @@ app.post("/stegEnc",function(request,response){
             await fs.promises.rename(files.image.path, newPath);
     
             try {
-                var stdout = await spawn('java', ['-cp', javaClassPath, 'AddMsg', newPath, "LSBPerChannel", fields.message]);
-                console.log(stdout.toString());
+                await spawn('java', ['-cp', javaClassPath, 'AddMsg', newPath, "LSBPerChannel", fields.message], {stdio: "inherit"});
             } catch (e) {
                 console.error(e);
             }
@@ -82,7 +90,9 @@ app.post("/stegEnc",function(request,response){
                     console.log(`Deleted file: ${stegPath}`);
                 }
             ), 600000);
-        } catch (e) {};
+        } catch (e) {
+            console.log(e);
+        };
     });
 });
 
