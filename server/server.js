@@ -1,7 +1,7 @@
 const express = require("express");
 const path = require("path");
 const app = express();
-const child = require('child_process')
+const spawn = require('await-spawn')
 
 const javaClassPath = process.argv[2];
 
@@ -40,11 +40,14 @@ app.post("/stegEnc",function(request,response){
             var newPath = `public/encImg/${newName}.png`;
             var stegPath = `public/encImg/z${newName}.png`;
             console.log(`Created file: ${newPath}`);
-            await fs.rename(files.image.path, newPath);
+            await fs.promises.rename(files.image.path, newPath);
     
-            var stegOutput = await child.spawn('java', ['-cp', javaClassPath, 'AddMsg', newPath, "LSBPerChannel", fields.message]);
-            console.log(stegOutput.stdout.toString());
-            console.log(stegOutput.stderr.toString());
+            try {
+                var stdout = await spawn('java', ['-cp', javaClassPath, 'AddMsg', newPath, "LSBPerChannel", fields.message]);
+                console.log(stdout.toString());
+            } catch (e) {
+                console.error(e);
+            }
     
             var message = xssEscape(fields.message);
             var page = `

@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/zsofiagordon/end-year-cs-project-webpage#readme",
   "dependencies": {
+    "await-spawn": "^4.0.2",
     "express": "^4.17.1",
     "formidable": "^1.2.2",
     "xss-escape": "^0.0.6"
