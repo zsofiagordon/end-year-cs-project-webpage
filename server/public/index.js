@@ -35,3 +35,12 @@ function doOnLoad() {
     
     dropArea.addEventListener('drop', handleDrop, false);
 }
+
+function loadFile(event) {
+    var output = document.getElementById('output');
+    output.classList.add('is-visible');
+    output.src = URL.createObjectURL(event.target.files[0]);
+    output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+    }
+};

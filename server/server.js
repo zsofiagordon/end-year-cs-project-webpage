@@ -19,20 +19,25 @@ app.get("/",function (request,response){
         <DOCTYPE!>
         <html>
             <head>
-                <link rel="stylesheet" href="/index.css">
+                <link rel="stylesheet" href="/index.scss">
                 <script src="index.js"></script>
             </head>
             <body onload="doOnLoad()">
-                <form action="/stegEnc" method="post" enctype="multipart/form-data">
-                    <label for="image">Select an image file:</label>
-                    <div id="drop-area">
-                        <input type="file" id="image" name="image" accept=".png">
-                        <label class="button" for="image">Select some files</label>
-                    </div>
-                    <label for="message">Enter your message</label>
-                    <input type="text" name="message" id="message">
-                    <input type="submit">
-                </form>
+                <div id="form-wrapper">
+                    <form action="/stegEnc" method="post" enctype="multipart/form-data">
+                        <label for="image">Select an image file:</label>
+                        <div id="drop-area">
+                            <input type="file" id="image" name="image" accept=".png" onchange="loadFile(event)">
+                            <label class="button" for="image">Select file</label>
+                            <br>
+                            <img id="output"/>
+                        </div>
+                        
+                        <label for="message">Enter your message</label>
+                        <input type="text" name="message" id="message">
+                        <input type="submit" id="submit">
+                    </form>
+                </div>
                 <script src="index.js"></script>
             </body>
         </html>
