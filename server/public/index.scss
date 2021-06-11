@@ -2,7 +2,7 @@
     border: 2px solid #aaa;
     background-color: #eee;
     border-radius: 20px;
-    width: 640px;
+    width: min(640px, 80%);
     font-family: sans-serif;
     margin: 100px auto;
     padding: 20px;
@@ -14,7 +14,7 @@
     border: 2px dashed #ccc;
     background-color: #fff;
     border-radius: 20px;
-    width: 480px;
+    width: min(480px, 80%);
     font-family: sans-serif;
     margin: 10px auto 50px auto;
     padding: 20px;
