@@ -79,7 +79,7 @@ app.post("/stegEnc",function(request,response){
                 (err) => {
                     if (err) {
                         console.log(err);
-                        throw err;
+                        return;
                     }
                     console.log(`Deleted file: ${newPath}`);
                 }
@@ -90,7 +90,7 @@ app.post("/stegEnc",function(request,response){
                 (err) => {
                     if (err) {
                         console.log(err);
-                        throw err;
+                        return;
                     }
                     console.log(`Deleted file: ${stegPath}`);
                 }
