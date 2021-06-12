@@ -4,15 +4,16 @@ const app = express();
 const spawn = require('await-spawn')
 
 const javaClassPath = process.argv[2];
+const encImgDir = "public/encImg";
+
 
 var xssEscape = require('xss-escape');
 var http = require("http");
 var formidable = require("formidable");
 var fs = require("fs");
 
-if (!fs.existsSync("public/encImg")){
-    fs.mkdirSync("public/encImg");
-}
+if (!fs.existsSync(encImgDir)) fs.mkdirSync(encImgDir);
+else for (let file of fs.readdirSync(encImgDir)) fs.unlinkSync(path.join(encImgDir, file));
 
 app.get("/",function (request,response){
     response.send(`
@@ -51,8 +52,8 @@ app.post("/stegEnc",function(request,response){
             console.log("Request recieved!");
             var nameTokens = files.image.path.split(path.sep);
             var newName = nameTokens[nameTokens.length - 1];
-            var newPath = `public/encImg/${newName}.png`;
-            var stegPath = `public/encImg/z${newName}.png`;
+            var newPath =  `${encImgDir}/${newName}.png`;
+            var stegPath = `${encImgDir}/z${newName}.png`;
             console.log(`Created file: ${newPath}`);
             await fs.promises.rename(files.image.path, newPath);
     
