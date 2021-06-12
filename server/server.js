@@ -66,10 +66,15 @@ app.post("/stegEnc",function(request,response){
             var message = xssEscape(fields.message);
             var page = `
                 <html>
+                    <head>
+                        <link rel="stylesheet" href="/stylesheets/stegEnc.scss">
+                    </head>
                     <body>
-                        <p>Image uploaded!<p>
-                        <p>message is: <b>${message}</b></p>
-                        <img src="encImg/z${newName}.png" style="width: 50%; margin: 10px;"/>
+                        <div id="output-wrapper">
+                                <h2>Image uploaded!</h2>
+                                <p>Message is: <br><b>${message}</b></p>
+                                <a href="encImg/z${newName}.png" download><img src="encImg/z${newName}.png" id="output-img" style="width: 50%; margin: 10px;"/></a>
+                        </div>
                     </body>
                 </html>
             `;
