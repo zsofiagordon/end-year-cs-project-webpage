@@ -16,7 +16,7 @@ var fs = require("fs");
 if (!fs.existsSync(encImgDir)) fs.mkdirSync(encImgDir);
 else for (let file of fs.readdirSync(encImgDir)) fs.unlinkSync(path.join(encImgDir, file));
 
-app.get("/",function (request,response){
+app.get("/stegEnc",function (request,response){
     response.send(`
         <DOCTYPE!>
         <html>
