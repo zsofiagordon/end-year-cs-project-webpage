@@ -5,23 +5,24 @@ const spawn = require('await-spawn')
 
 
 const javaClassPath = process.argv[2];
+const encImgDir = "public/encImg";
+
 
 var xssEscape = require('xss-escape');
 var http = require("http");
 var formidable = require("formidable");
 var fs = require("fs");
 
-if (!fs.existsSync("public/encImg")){
-    fs.mkdirSync("public/encImg");
-}
+if (!fs.existsSync(encImgDir)) fs.mkdirSync(encImgDir);
+else for (let file of fs.readdirSync(encImgDir)) fs.unlinkSync(path.join(encImgDir, file));
 
 app.get("/",function (request,response){
     response.send(`
         <DOCTYPE!>
         <html>
             <head>
-                <link rel="stylesheet" href="/index.scss">
-                <script src="index.js"></script>
+                <link rel="stylesheet" href="/stylesheets/index.scss">
+                <script src="/js/index.js"></script>
             </head>
             <body onload="doOnLoad()">
                 <div id="form-wrapper">
@@ -52,8 +53,8 @@ app.post("/stegEnc",function(request,response){
             console.log("Request recieved!");
             var nameTokens = files.image.path.split(path.sep);
             var newName = nameTokens[nameTokens.length - 1];
-            var newPath = `public/encImg/${newName}.png`;
-            var stegPath = `public/encImg/z${newName}.png`;
+            var newPath =  `${encImgDir}/${newName}.png`;
+            var stegPath = `${encImgDir}/z${newName}.png`;
             console.log(`Created file: ${newPath}`);
             await fs.promises.rename(files.image.path, newPath);
     
@@ -66,10 +67,15 @@ app.post("/stegEnc",function(request,response){
             var message = xssEscape(fields.message);
             var page = `
                 <html>
+                    <head>
+                        <link rel="stylesheet" href="/stylesheets/stegEnc.scss">
+                    </head>
                     <body>
-                        <p>Image uploaded!<p>
-                        <p>message is: <b>${message}</b></p>
-                        <img src="encImg/z${newName}.png" style="width: 50%; margin: 10px;"/>
+                        <div id="output-wrapper">
+                                <h2>Image uploaded!</h2>
+                                <p>Message is: <br><b>${message}</b></p>
+                                <a href="encImg/z${newName}.png" download><img src="encImg/z${newName}.png" id="output-img" style="width: 50%; margin: 10px;"/></a>
+                        </div>
                     </body>
                 </html>
             `;
