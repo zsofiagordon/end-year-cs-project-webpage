@@ -3,6 +3,7 @@ const path = require("path");
 const app = express();
 const spawn = require('await-spawn')
 
+
 const javaClassPath = process.argv[2];
 
 var xssEscape = require('xss-escape');
@@ -24,7 +25,7 @@ app.get("/",function (request,response){
             </head>
             <body onload="doOnLoad()">
                 <div id="form-wrapper">
-                    <form action="/stegEnc" method="post" enctype="multipart/form-data">
+                    <form action="/stegEnc" method="post" enctype="multipart/form-data"> 
                         <label for="image">Select an image file:</label>
                         <div id="drop-area">
                             <input type="file" id="image" name="image" accept=".png" onchange="loadFile(event)">
@@ -96,6 +97,105 @@ app.post("/stegEnc",function(request,response){
                 }
             ), 600000);
         } catch (e) {
+            console.log(e);
+        };
+    });
+});
+
+
+
+
+
+
+app.get("/stegDec",function (request,response){
+    response.send(`
+        <DOCTYPE!>
+        <html>
+            <head>
+                <link rel="stylesheet" href="/index.scss">
+                <script src="index.js"></script>
+            </head>
+            <body onload="doOnLoad()">
+                <div id="form-wrapper">
+                    <form action="/stegDec" method="post" enctype="multipart/form-data">
+                        <label for="image">Select an image file to decrypt:</label>
+                        <div id="drop-area">
+                            <input type="file" id="image" name="image" accept=".png" onchange="loadFile(event)">
+                            <label class="button" for="image">Select file</label>
+                            <br>
+                            <img id="output"/>
+                        </div>
+                        <input type="submit" id="submit">
+                    </form>
+                </div>
+                <script src="index.js"></script>
+            </body>
+        </html>
+    `);
+});
+
+app.post("/stegDec",function(request,response){
+    var form = new formidable.IncomingForm();
+    form.parse(request, async function (err, fields, files) {
+        try {
+            console.log("Request recieved!");
+            var nameTokens = files.image.path.split(path.sep);
+            var imgName = nameTokens[nameTokens.length - 1];
+            //var imgSrc = `public/encImg/${imgName}.png`;
+            var msgFile = `public/msgs/${imgName}.txt`;
+            var newPath = `public/decImg/${imgName}.png`;
+            await fs.promises.rename(files.image.path, newPath);
+
+    
+            try {
+                await spawn('java', ['-cp', javaClassPath, 'DecodeMsg', /*imgSrc*/newPath, "LSBPerChannel", msgFile], {stdio: "inherit"});
+            } catch (e) {
+                console.error(e);
+            }
+
+            fs.readFile(msgFile,'utf8',(err,data) =>{
+                if(err){
+                    var msg = "We couldn't get your message. Don't try again.";
+                }
+                else{
+                    var msg = data;
+                }
+                var page = `
+                    <html>
+                        <body>
+                            <p>Message!<p>
+                            <p>message is: <b>${msg}</b></p>
+                            <img src="decImg/${imgName}.png" style="width: 50%; margin: 10px;"/>
+                        </body>
+                    </html>
+                `;
+                response.send(page);
+                
+                /*fs.unlink(
+                    newPath,
+                    (err) => {
+                        if (err) {
+                            console.log(err);
+                            return;
+                        }
+                        console.log(`Deleted file: ${newPath}`);
+                    }
+                );
+        
+                setTimeout(() => fs.unlink(
+                    stegPath,
+                    (err) => {
+                        if (err) {
+                            console.log(err);
+                            return;
+                        }
+                        console.log(`Deleted file: ${stegPath}`);
+                    }
+                ), 600000);
+                 */
+            })
+    
+                    } catch (e) {
             console.log(e);
         };
     });
