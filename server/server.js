@@ -118,8 +118,8 @@ app.get("/stegDec",function (request,response){
         <DOCTYPE!>
         <html>
             <head>
-                <link rel="stylesheet" href="/index.scss">
-                <script src="index.js"></script>
+                <link rel="stylesheet" href="/stylesheets/index.scss">
+                <script src="/js/index.js"></script>
             </head>
             <body onload="doOnLoad()">
                 <div id="form-wrapper">
