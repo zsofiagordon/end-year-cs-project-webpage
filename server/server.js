@@ -6,6 +6,8 @@ const spawn = require('await-spawn')
 
 const javaClassPath = process.argv[2];
 const encImgDir = "public/encImg";
+const decImgDir = "public/decImg";
+const msgsDir = "public/msgs";
 
 
 var xssEscape = require('xss-escape');
@@ -15,6 +17,12 @@ var fs = require("fs");
 
 if (!fs.existsSync(encImgDir)) fs.mkdirSync(encImgDir);
 else for (let file of fs.readdirSync(encImgDir)) fs.unlinkSync(path.join(encImgDir, file));
+
+if (!fs.existsSync(decImgDir)) fs.mkdirSync(decImgDir);
+else for (let file of fs.readdirSync(decImgDir)) fs.unlinkSync(path.join(decImgDir, file));
+
+if (!fs.existsSync(msgsDir)) fs.mkdirSync(msgsDir);
+else for (let file of fs.readdirSync(msgsDir)) fs.unlinkSync(path.join(msgsDir, file));
 
 app.get("/stegEnc",function (request,response){
     response.send(`
@@ -148,8 +156,8 @@ app.post("/stegDec",function(request,response){
             var nameTokens = files.image.path.split(path.sep);
             var imgName = nameTokens[nameTokens.length - 1];
             //var imgSrc = `public/encImg/${imgName}.png`;
-            var msgFile = `public/msgs/${imgName}.txt`;
-            var newPath = `public/decImg/${imgName}.png`;
+            var msgFile = `${msgsDir}/${imgName}.txt`;
+            var newPath = `${decImgDir}/${imgName}.png`;
             await fs.promises.rename(files.image.path, newPath);
 
     
