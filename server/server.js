@@ -209,7 +209,7 @@ app.post("/stegDec",function(request,response){
                  */
             })
     
-                    } catch (e) {
+        } catch (e) {
             console.log(e);
         };
     });
