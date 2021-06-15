@@ -6,6 +6,8 @@ const spawn = require('await-spawn')
 
 const javaClassPath = process.argv[2];
 const encImgDir = "public/encImg";
+const decImgDir = "public/decImg";
+const msgsDir = "public/msgs";
 
 
 var xssEscape = require('xss-escape');
@@ -16,7 +18,13 @@ var fs = require("fs");
 if (!fs.existsSync(encImgDir)) fs.mkdirSync(encImgDir);
 else for (let file of fs.readdirSync(encImgDir)) fs.unlinkSync(path.join(encImgDir, file));
 
-app.get("/",function (request,response){
+if (!fs.existsSync(decImgDir)) fs.mkdirSync(decImgDir);
+else for (let file of fs.readdirSync(decImgDir)) fs.unlinkSync(path.join(decImgDir, file));
+
+if (!fs.existsSync(msgsDir)) fs.mkdirSync(msgsDir);
+else for (let file of fs.readdirSync(msgsDir)) fs.unlinkSync(path.join(msgsDir, file));
+
+app.get("/stegEnc",function (request,response){
     response.send(`
         <DOCTYPE!>
         <html>
@@ -118,8 +126,8 @@ app.get("/stegDec",function (request,response){
         <DOCTYPE!>
         <html>
             <head>
-                <link rel="stylesheet" href="/index.scss">
-                <script src="index.js"></script>
+                <link rel="stylesheet" href="/stylesheets/index.scss">
+                <script src="/js/index.js"></script>
             </head>
             <body onload="doOnLoad()">
                 <div id="form-wrapper">
@@ -148,8 +156,8 @@ app.post("/stegDec",function(request,response){
             var nameTokens = files.image.path.split(path.sep);
             var imgName = nameTokens[nameTokens.length - 1];
             //var imgSrc = `public/encImg/${imgName}.png`;
-            var msgFile = `/tmp/${imgName}.txt`;
-            var newPath =  `temp/decImg/${newName}.png`;
+            var msgFile = `${msgsDir}/${imgName}.txt`;
+            var newPath = `${decImgDir}/${imgName}.png`;
             await fs.promises.rename(files.image.path, newPath);
 
     
@@ -192,7 +200,7 @@ app.post("/stegDec",function(request,response){
                  
             })
     
-                    } catch (e) {
+        } catch (e) {
             console.log(e);
         };
     });
