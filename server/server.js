@@ -148,8 +148,8 @@ app.post("/stegDec",function(request,response){
             var nameTokens = files.image.path.split(path.sep);
             var imgName = nameTokens[nameTokens.length - 1];
             //var imgSrc = `public/encImg/${imgName}.png`;
-            var msgFile = `public/msgs/${imgName}.txt`;
-            var newPath = `public/decImg/${imgName}.png`;
+            var msgFile = `/tmp/${imgName}.txt`;
+            var newPath =  `temp/decImg/${newName}.png`;
             await fs.promises.rename(files.image.path, newPath);
 
     
@@ -171,13 +171,14 @@ app.post("/stegDec",function(request,response){
                         <body>
                             <p>Message!<p>
                             <p>message is: <b>${msg}</b></p>
-                            <img src="decImg/${imgName}.png" style="width: 50%; margin: 10px;"/>
+                            <img src="${newPath}" style="width: 50%; margin: 10px;"/>
                         </body>
                     </html>
                 `;
                 response.send(page);
                 
-                /*fs.unlink(
+                //delte uploaded file immideatley
+                fs.unlink(
                     newPath,
                     (err) => {
                         if (err) {
@@ -187,18 +188,8 @@ app.post("/stegDec",function(request,response){
                         console.log(`Deleted file: ${newPath}`);
                     }
                 );
-        
-                setTimeout(() => fs.unlink(
-                    stegPath,
-                    (err) => {
-                        if (err) {
-                            console.log(err);
-                            return;
-                        }
-                        console.log(`Deleted file: ${stegPath}`);
-                    }
-                ), 600000);
-                 */
+                
+                 
             })
     
                     } catch (e) {
