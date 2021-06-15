@@ -176,17 +176,22 @@ app.post("/stegDec",function(request,response){
                 }
                 var page = `
                     <html>
+                        <head>
+                            <link rel="stylesheet" href="/stylesheets/stegEnc.scss">
+                        </head>
                         <body>
-                            <p>Message!<p>
-                            <p>message is: <b>${msg}</b></p>
-                            <img src="${newPath}" style="width: 50%; margin: 10px;"/>
+                            <div id="output-wrapper">
+                                <h2>Message decoded!</h2>
+                                <p>Message is: <br><b>${msg}</b></p>
+                                <img src="decImg/${imgName}.png" style="width: 50%; margin: 10px;"/>
+                            </div>
                         </body>
                     </html>
                 `;
                 response.send(page);
                 
                 //delte uploaded file immideatley
-                fs.unlink(
+                setTimeout(() => fs.unlink(
                     newPath,
                     (err) => {
                         if (err) {
@@ -195,7 +200,17 @@ app.post("/stegDec",function(request,response){
                         }
                         console.log(`Deleted file: ${newPath}`);
                     }
-                );
+                ), 60000);
+                setTimeout(() => fs.unlink(
+                    msgFile,
+                    (err) => {
+                        if (err) {
+                            console.log(err);
+                            return;
+                        }
+                        console.log(`Deleted file: ${msgFile}`);
+                    }
+                ), 60000);
                 
                  
             })
