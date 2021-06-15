@@ -37,14 +37,14 @@ app.get("/stegEnc",function (request,response){
                     <form action="/stegEnc" method="post" enctype="multipart/form-data"> 
                         <label for="image">Select an image file:</label>
                         <div id="drop-area">
-                            <input type="file" id="image" name="image" accept=".png" onchange="loadFile(event)">
+                            <input type="file" id="image" name="image" accept=".png" onchange="loadFile(event)" required>
                             <label class="button" for="image">Select file</label>
                             <br>
                             <img id="output"/>
                         </div>
                         
                         <label for="message">Enter your message</label>
-                        <input type="text" name="message" id="message">
+                        <input type="text" name="message" id="message" required>
                         <input type="submit" id="submit">
                     </form>
                 </div>
@@ -134,7 +134,7 @@ app.get("/stegDec",function (request,response){
                     <form action="/stegDec" method="post" enctype="multipart/form-data">
                         <label for="image">Select an image file to decrypt:</label>
                         <div id="drop-area">
-                            <input type="file" id="image" name="image" accept=".png" onchange="loadFile(event)">
+                            <input type="file" id="image" name="image" accept=".png" onchange="loadFile(event)" required>
                             <label class="button" for="image">Select file</label>
                             <br>
                             <img id="output"/>
