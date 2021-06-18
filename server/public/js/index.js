@@ -17,7 +17,9 @@ function doOnLoad() {
         let dt = e.dataTransfer;
         let files = dt.files;
       
-        console.log(files);
+        if (files.length > 0) {
+            document.getElementById("image").files = files;
+        }
     }
 
     let dropArea = document.getElementById('drop-area');
